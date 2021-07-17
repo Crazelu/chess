@@ -20,7 +20,6 @@ class _BoardViewState extends State<BoardView> {
   }
 
   void onSquareTapped(List<int> squarePosition) {
-    if (currentPosition == squarePosition) return;
     if (currentPosition == null) {
       setState(() {
         currentPosition = squarePosition;
