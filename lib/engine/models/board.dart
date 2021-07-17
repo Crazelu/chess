@@ -10,6 +10,7 @@ class Board {
     return Board(generateSquares());
   }
 
+  ///Generates a nested array of ranks which contain squares with specific positions.
   static List<List<Square>> generateSquares() {
     List rankLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     List<List<Square>> board = [];
@@ -31,8 +32,4 @@ class Board {
     }
     return board;
   }
-}
-
-void main() {
-  Board.createBoard();
 }

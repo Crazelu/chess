@@ -1,3 +1,4 @@
+import 'package:chess/presentation/views/views.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,6 +14,7 @@ class ChessApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      home: SplashScreen(),
     );
   }
 }
