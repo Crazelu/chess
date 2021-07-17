@@ -15,7 +15,7 @@ class Square {
   final List<int> arrayPos;
 
   ///Represents what chess piece this square holds at a point in time.
-  final Piece? piece;
+  Piece? piece;
 
   ///Represents an individual square on a chess board at
   ///position specified by `position`.

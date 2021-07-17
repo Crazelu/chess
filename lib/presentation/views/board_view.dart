@@ -11,10 +11,35 @@ class BoardView extends StatefulWidget {
 
 class _BoardViewState extends State<BoardView> {
   late Board chessBoard;
+  List<int>? currentPosition;
+  List<int>? targetPosition;
   @override
   void initState() {
     super.initState();
     chessBoard = Board.createBoard();
+  }
+
+  void onSquareTapped(List<int> squarePosition) {
+    if (currentPosition == null) {
+      setState(() {
+        currentPosition = squarePosition;
+      });
+    } else {
+      setState(() {
+        targetPosition = squarePosition;
+      });
+      movePiece();
+    }
+  }
+
+  void movePiece() {
+    if (currentPosition != null && targetPosition != null) {
+      chessBoard.movePiece(currentPosition!, targetPosition!);
+      setState(() {
+        currentPosition = null;
+        targetPosition = null;
+      });
+    }
   }
 
   @override
@@ -29,7 +54,10 @@ class _BoardViewState extends State<BoardView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: rank
                       .map(
-                        (square) => SquareWidget(square: square),
+                        (square) => SquareWidget(
+                          square: square,
+                          onSquareTapped: onSquareTapped,
+                        ),
                       )
                       .toList(),
                 ),

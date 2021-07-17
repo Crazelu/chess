@@ -43,4 +43,13 @@ class Board {
     }
     return board;
   }
+
+  ///Moves a piece from one square to another
+  void movePiece(List<int> currentPosition, List<int> targetPosition) {
+    Square currentSquare = this.squares[currentPosition[0]][currentPosition[1]];
+    Square targetSquare = this.squares[targetPosition[0]][targetPosition[1]];
+
+    targetSquare.piece = currentSquare.piece;
+    currentSquare.piece = null;
+  }
 }
