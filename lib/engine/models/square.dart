@@ -3,7 +3,7 @@ import 'package:chess/engine/models/piece.dart';
 ///Represents an individual square on a chess board.
 class Square {
   ///Indicates whether the sqaure is a light square or not
-  final bool light;
+  final bool isLightSquare;
 
   ///Position of square on board following standard notations.
   ///
@@ -23,7 +23,7 @@ class Square {
   ///The square is a light square if `light = true`. Otherwise,
   ///the square is a dark square.
   Square({
-    required this.light,
+    required this.isLightSquare,
     required this.position,
     required this.arrayPos,
     this.piece,

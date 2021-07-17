@@ -38,7 +38,7 @@ class SquareWidget extends StatelessWidget {
         height: context.screenWidth(.12),
         width: context.screenWidth(.12),
         decoration: BoxDecoration(
-          color: square.light ? Colors.grey[200] : Colors.blueGrey[600],
+          color: square.isLightSquare ? Colors.grey[200] : Colors.blueGrey[600],
           border: border,
         ),
         child: square.piece == null

@@ -26,12 +26,12 @@ class Board {
         outRank.add(
           Square(
             arrayPos: [8 - i, fileNo],
-            light: light,
+            isLightSquare: light,
             position: position,
             piece: i < 3 || i > 6
                 ? Piece.getPiece(
                     initialPosition: position,
-                    isLightSquare: i < 3,
+                    isWhite: i < 3,
                   )
                 : null,
           ),

@@ -7,50 +7,44 @@ class Piece {
   ///Image file for this piece.
   final String image;
 
-  ///Indicates whether piece is on a light square or not.
-  final bool light;
+  ///Indicates whether piece is a white piece or not.
+  final bool isWhite;
 
   const Piece({
     required this.image,
-    this.light = true,
+    this.isWhite = true,
   });
 
   ///Constructs a Piece object whose image is specified by `initialPosition`
-  ///and color by `isLightSquare`.
+  ///and color by `isWhite`.
   factory Piece.getPiece({
     required String initialPosition,
-    required bool isLightSquare,
+    required bool isWhite,
   }) {
     switch (initialPosition) {
       case "a8":
       case "a1":
       case "h8":
       case "h1":
-        return Piece(
-            image: isLightSquare ? ROOK : BLACK_ROOK, light: isLightSquare);
+        return Piece(image: isWhite ? ROOK : BLACK_ROOK, isWhite: isWhite);
       case "b8":
       case "b1":
       case "g8":
       case "g1":
-        return Piece(
-            image: isLightSquare ? KNIGHT : BLACK_KNIGHT, light: isLightSquare);
+        return Piece(image: isWhite ? KNIGHT : BLACK_KNIGHT, isWhite: isWhite);
       case "c8":
       case "c1":
       case "f8":
       case "f1":
-        return Piece(
-            image: isLightSquare ? BISHOP : BLACK_BISHOP, light: isLightSquare);
+        return Piece(image: isWhite ? BISHOP : BLACK_BISHOP, isWhite: isWhite);
       case "d8":
       case "d1":
-        return Piece(
-            image: isLightSquare ? QUEEN : BLACK_QUEEN, light: isLightSquare);
+        return Piece(image: isWhite ? QUEEN : BLACK_QUEEN, isWhite: isWhite);
       case "e8":
       case "e1":
-        return Piece(
-            image: isLightSquare ? KING : BLACK_KING, light: isLightSquare);
+        return Piece(image: isWhite ? KING : BLACK_KING, isWhite: isWhite);
       default:
-        return Piece(
-            image: isLightSquare ? PAWN : BLACK_PAWN, light: isLightSquare);
+        return Piece(image: isWhite ? PAWN : BLACK_PAWN, isWhite: isWhite);
     }
   }
 }
