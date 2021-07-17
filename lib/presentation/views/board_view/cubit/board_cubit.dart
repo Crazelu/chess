@@ -1,4 +1,4 @@
-import 'package:chess/presentation/views/board_view/chess_board_repository.dart';
+import 'package:chess/data/repositories/chess_board_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'board_state.dart';
 
