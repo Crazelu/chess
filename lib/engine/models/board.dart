@@ -45,15 +45,16 @@ class Board {
   }
 
   ///Moves a piece from one square to another
-  void movePiece(List<int> currentPosition, List<int> targetPosition) {
+  bool movePiece(List<int> currentPosition, List<int> targetPosition) {
     //if the current and target positions are same, this is not a valid
     //piece movement flow, do nothing
-    if (currentPosition == targetPosition) return;
+    if (currentPosition == targetPosition) return false;
 
     Square currentSquare = this.squares[currentPosition[0]][currentPosition[1]];
     Square targetSquare = this.squares[targetPosition[0]][targetPosition[1]];
 
     targetSquare.piece = currentSquare.piece;
     currentSquare.piece = null;
+    return true;
   }
 }

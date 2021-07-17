@@ -16,6 +16,7 @@ dependencies:
   flutter_screenutil: ^5.0.0+2
   flutter_bloc: ^7.0.1
   equatable: ^2.0.3
+  assets_audio_player: ^3.0.3+3
 
 dev_dependencies:
   flutter_test:

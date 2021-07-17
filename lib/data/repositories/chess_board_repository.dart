@@ -12,21 +12,26 @@ class ChessBoardRepo {
 
   Board get chessBoard => _chessBoard;
 
-  List<List<int>?> onSquareTapped(List<int> squarePosition) {
+  List<List<int>?> onSquareTapped(
+      List<int> squarePosition, Function playSound) {
     if (_currentPosition == null) {
       _currentPosition = squarePosition;
     } else {
       _targetPosition = squarePosition;
 
-      movePiece();
+      movePiece(playSound);
     }
 
     return [_currentPosition, _targetPosition];
   }
 
-  void movePiece() {
+  void movePiece(Function playSound) {
     if (_currentPosition != null && _targetPosition != null) {
-      _chessBoard.movePiece(_currentPosition!, _targetPosition!);
+      final moved = _chessBoard.movePiece(_currentPosition!, _targetPosition!);
+
+      if (moved) {
+        playSound();
+      }
 
       _currentPosition = null;
       _targetPosition = null;
