@@ -10,7 +10,9 @@ class RouteGenerator {
       case SplashScreenViewRoute:
         return _getPageRoute(SplashScreen());
       case BoardViewRoute:
-        return _getPageRoute(BoardView());
+        return _getPageRoute(
+          BoardView(),
+        );
 
       default:
         return _getPageRoute(_errorPage());

@@ -12,12 +12,6 @@ class InitialBoardState extends Equatable implements BoardState {
   List<Object?> get props => [1];
 }
 
-class LoadingBoardState extends Equatable implements BoardState {
-  const LoadingBoardState();
-  @override
-  List<Object?> get props => [2];
-}
-
 class LoadedBoardState extends Equatable implements BoardState {
   final Board board;
   const LoadedBoardState(this.board);

@@ -1,13 +1,12 @@
-import 'package:chess/presentation/views/board_view/board_view_repository.dart';
+import 'package:chess/presentation/views/board_view/chess_board_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'board_state.dart';
 
 class BoardCubit extends Cubit<BoardState> {
-  final BoardViewRepository repository;
+  final ChessBoardRepo repository;
   BoardCubit(this.repository) : super(InitialBoardState());
 
   void createBoard() {
-    emit(LoadingBoardState());
     final chessBoard = repository.createBoard();
     emit(LoadedBoardState(chessBoard));
   }

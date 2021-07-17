@@ -1,6 +1,7 @@
-import 'package:chess/engine/models/board.dart';
-import 'package:chess/presentation/shared/square.dart';
+import 'package:chess/presentation/shared/shared.dart';
 import 'package:flutter/material.dart';
+import 'cubit/board_cubit.dart';
+import 'cubit/board_state.dart';
 
 class BoardView extends StatefulWidget {
   const BoardView({Key? key}) : super(key: key);
@@ -10,61 +11,34 @@ class BoardView extends StatefulWidget {
 }
 
 class _BoardViewState extends State<BoardView> {
-  late Board chessBoard;
-  List<int>? currentPosition;
-  List<int>? targetPosition;
   @override
   void initState() {
     super.initState();
-    chessBoard = Board.createBoard();
-  }
-
-  void onSquareTapped(List<int> squarePosition) {
-    if (currentPosition == null) {
-      setState(() {
-        currentPosition = squarePosition;
-      });
-    } else {
-      setState(() {
-        targetPosition = squarePosition;
-      });
-      movePiece();
-    }
-  }
-
-  void movePiece() {
-    if (currentPosition != null && targetPosition != null) {
-      chessBoard.movePiece(currentPosition!, targetPosition!);
-      setState(() {
-        currentPosition = null;
-        targetPosition = null;
-      });
-    }
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      context.read<BoardCubit>().createBoard();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final boardCubit = context.watch<BoardCubit>();
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: chessBoard.squares
-              .map(
-                (rank) => Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: rank
-                      .map(
-                        (square) => SquareWidget(
-                          square: square,
-                          onSquareTapped: onSquareTapped,
-                          currentPosition: currentPosition,
-                        ),
-                      )
-                      .toList(),
-                ),
-              )
-              .toList(),
-        ),
+        child: BlocBuilder<BoardCubit, BoardState>(builder: (_, state) {
+          if (state is LoadedBoardState) {
+            return ChessBoard(
+              squares: state.board.squares,
+              onSquareTapped: boardCubit.onSquareTapped,
+            );
+          } else if (state is BoardUpdatedState) {
+            return ChessBoard(
+              squares: state.board.squares,
+              onSquareTapped: boardCubit.onSquareTapped,
+              currentPosition: state.currentPosition,
+            );
+          }
+          return Text("");
+        }),
       ),
     );
   }

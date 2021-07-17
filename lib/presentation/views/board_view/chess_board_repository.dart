@@ -1,6 +1,6 @@
 import 'package:chess/engine/models/board.dart';
 
-class BoardViewRepository {
+class ChessBoardRepo {
   late Board _chessBoard;
   List<int>? _currentPosition;
   List<int>? _targetPosition;
