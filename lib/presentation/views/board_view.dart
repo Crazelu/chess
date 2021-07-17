@@ -58,6 +58,7 @@ class _BoardViewState extends State<BoardView> {
                         (square) => SquareWidget(
                           square: square,
                           onSquareTapped: onSquareTapped,
+                          currentPosition: currentPosition,
                         ),
                       )
                       .toList(),
