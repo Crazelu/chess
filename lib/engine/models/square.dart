@@ -10,6 +10,10 @@ class Square {
   ///e.g `a8`
   final String position;
 
+  ///Position of this square on the board given as `[x,y]` coordinate of the square
+  ///where x is in the rank axis and y is in the file axis.
+  final List<int> arrayPos;
+
   ///Represents what chess piece this square holds at a point in time.
   final Piece? piece;
 
@@ -21,6 +25,7 @@ class Square {
   Square({
     required this.light,
     required this.position,
+    required this.arrayPos,
     this.piece,
   });
 }

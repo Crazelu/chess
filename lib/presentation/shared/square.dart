@@ -17,7 +17,7 @@ class SquareWidget extends StatelessWidget {
       width: width / 8,
       color: square.light ? Colors.grey[200] : Colors.blueGrey[600],
       child: square.piece == null
-          ? Text(square.position)
+          ? Text("${square.arrayPos[0]}${square.arrayPos[1]}")
           : Image.asset(
               square.piece!.image,
             ),

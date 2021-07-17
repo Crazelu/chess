@@ -19,11 +19,13 @@ class Board {
 
     for (int i = 8; i > 0; i--) {
       light = !light;
+      int fileNo = 0;
       List<Square> outRank = [];
       for (var rankLetter in rankLetters) {
         final position = rankLetter + '$i';
         outRank.add(
           Square(
+            arrayPos: [8 - i, fileNo],
             light: light,
             position: position,
             piece: i < 3 || i > 6
@@ -35,6 +37,7 @@ class Board {
           ),
         );
         light = !light;
+        fileNo++;
       }
       board.add(outRank);
     }
