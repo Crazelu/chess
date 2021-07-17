@@ -1,3 +1,4 @@
+import 'package:chess/engine/models/piece.dart';
 import 'package:chess/engine/models/square.dart';
 
 ///Represents the chess board with 64 squares.
@@ -20,10 +21,17 @@ class Board {
       light = !light;
       List<Square> outRank = [];
       for (var rankLetter in rankLetters) {
+        final position = rankLetter + '$i';
         outRank.add(
           Square(
             light: light,
-            position: rankLetter + '$i',
+            position: position,
+            piece: i < 3 || i > 6
+                ? Piece.getPiece(
+                    initialPosition: position,
+                    isLightSquare: i < 3,
+                  )
+                : null,
           ),
         );
         light = !light;

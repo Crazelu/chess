@@ -1,5 +1,4 @@
 import 'package:chess/engine/models/piece.dart';
-import 'package:chess/utils/constants.dart';
 
 ///Represents an individual square on a chess board.
 class Square {
@@ -12,7 +11,7 @@ class Square {
   final String position;
 
   ///Represents what chess piece this square holds at a point in time.
-  final Piece piece;
+  final Piece? piece;
 
   ///Represents an individual square on a chess board at
   ///position specified by `position`.
@@ -22,6 +21,6 @@ class Square {
   Square({
     required this.light,
     required this.position,
-    this.piece = const Piece(image: PAWN),
+    this.piece,
   });
 }
