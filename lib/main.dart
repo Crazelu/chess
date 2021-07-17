@@ -1,5 +1,5 @@
 import 'package:chess/handlers/handlers.dart';
-import 'package:chess/presentation/views/views.dart';
+import 'package:chess/utils/route_generator.dart';
 import 'package:chess/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,7 +21,7 @@ class ChessApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         navigatorKey: locator<NavigationHandler>().navigatorKey,
-        home: SplashScreen(),
+        onGenerateRoute: RouteGenerator.onGenerateRoute,
       ),
     );
   }

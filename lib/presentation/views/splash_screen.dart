@@ -1,4 +1,5 @@
-import 'package:chess/presentation/views/board_view.dart';
+import 'package:chess/handlers/handlers.dart';
+import 'package:chess/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,13 +15,8 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      Future.delayed(Duration(seconds: 3)).then(
-        (value) => Navigator.of(context).pushReplacement(
-          CupertinoPageRoute(
-            builder: (_) => BoardView(),
-          ),
-        ),
-      );
+      Future.delayed(Duration(seconds: 3)).then((value) =>
+          locator<NavigationHandler>().pushReplacementNamed(BoardViewRoute));
     });
   }
 
