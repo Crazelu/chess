@@ -16,7 +16,10 @@ class SquareWidget extends StatelessWidget {
       height: width / 8,
       width: width / 8,
       color: square.light ? Colors.grey[200] : Colors.blueGrey[600],
-      child: Text(square.position),
+      child: Image.asset(
+        square.piece.image,
+        color: square.light ? null : Colors.black,
+      ),
     );
   }
 }
