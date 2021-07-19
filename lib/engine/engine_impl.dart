@@ -86,45 +86,50 @@ class EngineImpl implements Engine {
     bool isWhite,
   ) {
     List<ArrayPosition> validSquares = [];
-
-    switch (isWhite) {
-      //if it's a white pawn, calculate the adjacent offsets by first finding the next rank
-      //which is essentially the current rank - 1
-      //then get adjacent files by adding and subtracting 1 from the current file
-      case true:
-        final nextRank = rank - 1;
-        final rightAdjacentPiece = squares[nextRank][file + 1].piece;
-        if (rightAdjacentPiece != null &&
-            rightAdjacentPiece.isWhite != isWhite) {
-          validSquares.add(
-            ArrayPosition(rank: nextRank, file: file + 1),
-          );
-        }
-        final leftAdjacentPiece = squares[nextRank][file - 1].piece;
-        if (leftAdjacentPiece != null && leftAdjacentPiece.isWhite != isWhite) {
-          validSquares.add(
-            ArrayPosition(rank: nextRank, file: file - 1),
-          );
-        }
-        break;
-      default:
-        //if it's a black pawn, calculate the adjacent offsets by first finding the next rank
-        //which is essentially the current rank + 1
+    try {
+      switch (isWhite) {
+        //if it's a white pawn, calculate the adjacent offsets by first finding the next rank
+        //which is essentially the current rank - 1
         //then get adjacent files by adding and subtracting 1 from the current file
-        final nextRank = rank + 1;
-        final rightAdjacentPiece = squares[nextRank][file - 1].piece;
-        if (rightAdjacentPiece != null &&
-            rightAdjacentPiece.isWhite != isWhite) {
-          validSquares.add(
-            ArrayPosition(rank: nextRank, file: file - 1),
-          );
-        }
-        final leftAdjacentPiece = squares[nextRank][file + 1].piece;
-        if (leftAdjacentPiece != null && leftAdjacentPiece.isWhite != isWhite) {
-          validSquares.add(
-            ArrayPosition(rank: nextRank, file: file + 1),
-          );
-        }
+        case true:
+          final nextRank = rank - 1;
+          final rightAdjacentPiece = squares[nextRank][file + 1].piece;
+          if (rightAdjacentPiece != null &&
+              rightAdjacentPiece.isWhite != isWhite) {
+            validSquares.add(
+              ArrayPosition(rank: nextRank, file: file + 1),
+            );
+          }
+          final leftAdjacentPiece = squares[nextRank][file - 1].piece;
+          if (leftAdjacentPiece != null &&
+              leftAdjacentPiece.isWhite != isWhite) {
+            validSquares.add(
+              ArrayPosition(rank: nextRank, file: file - 1),
+            );
+          }
+          break;
+        default:
+          //if it's a black pawn, calculate the adjacent offsets by first finding the next rank
+          //which is essentially the current rank + 1
+          //then get adjacent files by adding and subtracting 1 from the current file
+          final nextRank = rank + 1;
+          final rightAdjacentPiece = squares[nextRank][file - 1].piece;
+          if (rightAdjacentPiece != null &&
+              rightAdjacentPiece.isWhite != isWhite) {
+            validSquares.add(
+              ArrayPosition(rank: nextRank, file: file - 1),
+            );
+          }
+          final leftAdjacentPiece = squares[nextRank][file + 1].piece;
+          if (leftAdjacentPiece != null &&
+              leftAdjacentPiece.isWhite != isWhite) {
+            validSquares.add(
+              ArrayPosition(rank: nextRank, file: file + 1),
+            );
+          }
+      }
+    } catch (e) {
+      print(e);
     }
 
     return validSquares;
@@ -142,86 +147,90 @@ class EngineImpl implements Engine {
     print(currentPosition);
     List<ArrayPosition> validSquares = [];
 
-    final capturableSquares =
-        _getCapturableAdjacentPawnMoves(rank, file, isWhite);
+    try {
+      final capturableSquares =
+          _getCapturableAdjacentPawnMoves(rank, file, isWhite);
 
-    if (capturableSquares.length != 0) {
-      validSquares.addAll(capturableSquares);
-    }
+      if (capturableSquares.length != 0) {
+        validSquares.addAll(capturableSquares);
+      }
 
-    switch (rank) {
-      case 1:
-        //7th rank (black)
-        //since pawns on this rank can go as far as two steps in a
-        //vertical direction, check if there are pieces on any of the
-        //two downward squares and don't include them as valid squares if they have
-        //enemy pieces
+      switch (rank) {
+        case 1:
+          //7th rank (black)
+          //since pawns on this rank can go as far as two steps in a
+          //vertical direction, check if there are pieces on any of the
+          //two downward squares and don't include them as valid squares if they have
+          //enemy pieces
 
-        final piece = squares[rank + 1][file].piece;
-        //if a white piece makes it to this rank, it shouldn't be able to move
-        //upward like a black piece
+          final piece = squares[rank + 1][file].piece;
+          //if a white piece makes it to this rank, it shouldn't be able to move
+          //upward like a black piece
 
-        if (piece == null) {
-          if (isWhite) return validSquares;
-          validSquares.add(
-            ArrayPosition(rank: rank + 1, file: file),
-          );
-        } else {
-          return validSquares;
-        }
-        if (squares[rank + 2][file].piece == null) {
-          validSquares.add(
-            ArrayPosition(rank: rank + 2, file: file),
-          );
-        }
-        break;
-      case 6:
-        //2nd rank (white)
-        //since pawns on this rank can go as far as two steps in a
-        //vertical direction, check if there are pieces on any of the
-        //two upward squares and don't include them as valid squares if they have
-        //enemy pieces
-
-        final piece = squares[rank - 1][file].piece;
-        //if a black piece makes it to this rank, it shouldn't be able to move
-        //upward like a white piece
-
-        if (piece == null) {
-          if (!isWhite) return validSquares;
-          validSquares.add(
-            ArrayPosition(rank: rank - 1, file: file),
-          );
-        } else {
-          return validSquares;
-        }
-        if (squares[rank - 2][file].piece == null) {
-          validSquares.add(
-            ArrayPosition(rank: rank - 2, file: file),
-          );
-        }
-        break;
-      default:
-        //if pawn is not on 7th ond 2nd rank, it can only move one square vertically
-
-        if (isWhite) {
-          //white pawns can only move one square up the board
-          if (squares[rank - 1][file].piece == null) {
-            validSquares.add(
-              ArrayPosition(rank: rank - 1, file: file),
-            );
-          } else {
-            return validSquares;
-          }
-        } else {
-          //black pawns can only move one square down the board
-          if (squares[rank + 1][file].piece == null) {
+          if (piece == null) {
+            if (isWhite) return validSquares;
             validSquares.add(
               ArrayPosition(rank: rank + 1, file: file),
             );
           } else {
             return validSquares;
           }
-        }
+          if (squares[rank + 2][file].piece == null) {
+            validSquares.add(
+              ArrayPosition(rank: rank + 2, file: file),
+            );
+          }
+          break;
+        case 6:
+          //2nd rank (white)
+          //since pawns on this rank can go as far as two steps in a
+          //vertical direction, check if there are pieces on any of the
+          //two upward squares and don't include them as valid squares if they have
+          //enemy pieces
+
+          final piece = squares[rank - 1][file].piece;
+          //if a black piece makes it to this rank, it shouldn't be able to move
+          //upward like a white piece
+
+          if (piece == null) {
+            if (!isWhite) return validSquares;
+            validSquares.add(
+              ArrayPosition(rank: rank - 1, file: file),
+            );
+          } else {
+            return validSquares;
+          }
+          if (squares[rank - 2][file].piece == null) {
+            validSquares.add(
+              ArrayPosition(rank: rank - 2, file: file),
+            );
+          }
+          break;
+        default:
+          //if pawn is not on 7th ond 2nd rank, it can only move one square vertically
+
+          if (isWhite) {
+            //white pawns can only move one square up the board
+            if (squares[rank - 1][file].piece == null) {
+              validSquares.add(
+                ArrayPosition(rank: rank - 1, file: file),
+              );
+            } else {
+              return validSquares;
+            }
+          } else {
+            //black pawns can only move one square down the board
+            if (squares[rank + 1][file].piece == null) {
+              validSquares.add(
+                ArrayPosition(rank: rank + 1, file: file),
+              );
+            } else {
+              return validSquares;
+            }
+          }
+      }
+    } catch (e) {
+      print(e);
     }
 
     return validSquares;
