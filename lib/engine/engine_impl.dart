@@ -80,6 +80,56 @@ class EngineImpl implements Engine {
     }
   }
 
+  List<ArrayPosition> _getCapturableAdjacentPawnMoves(
+    int rank,
+    int file,
+    bool isWhite,
+  ) {
+    List<ArrayPosition> validSquares = [];
+
+    switch (isWhite) {
+      //if it's a white pawn, calculate the adjacent offsets by first finding the next rank
+      //which is essentially the current rank - 1
+      //then get adjacent files by adding and subtracting 1 from the current file
+      case true:
+        final nextRank = rank - 1;
+        final rightAdjacentPiece = squares[nextRank][file + 1].piece;
+        if (rightAdjacentPiece != null &&
+            rightAdjacentPiece.isWhite != isWhite) {
+          validSquares.add(
+            ArrayPosition(rank: nextRank, file: file + 1),
+          );
+        }
+        final leftAdjacentPiece = squares[nextRank][file - 1].piece;
+        if (leftAdjacentPiece != null && leftAdjacentPiece.isWhite != isWhite) {
+          validSquares.add(
+            ArrayPosition(rank: nextRank, file: file - 1),
+          );
+        }
+        break;
+      default:
+        //if it's a black pawn, calculate the adjacent offsets by first finding the next rank
+        //which is essentially the current rank + 1
+        //then get adjacent files by adding and subtracting 1 from the current file
+        final nextRank = rank + 1;
+        final rightAdjacentPiece = squares[nextRank][file - 1].piece;
+        if (rightAdjacentPiece != null &&
+            rightAdjacentPiece.isWhite != isWhite) {
+          validSquares.add(
+            ArrayPosition(rank: nextRank, file: file - 1),
+          );
+        }
+        final leftAdjacentPiece = squares[nextRank][file + 1].piece;
+        if (leftAdjacentPiece != null && leftAdjacentPiece.isWhite != isWhite) {
+          validSquares.add(
+            ArrayPosition(rank: nextRank, file: file + 1),
+          );
+        }
+    }
+
+    return validSquares;
+  }
+
   List<ArrayPosition> _getValidPawnMoves(
     List<int> currentPosition,
     bool isWhite,
@@ -92,6 +142,13 @@ class EngineImpl implements Engine {
     print(currentPosition);
     List<ArrayPosition> validSquares = [];
 
+    final capturableSquares =
+        _getCapturableAdjacentPawnMoves(rank, file, isWhite);
+
+    if (capturableSquares.length != 0) {
+      validSquares.addAll(capturableSquares);
+    }
+
     switch (rank) {
       case 1:
         //7th rank (black)
@@ -100,7 +157,12 @@ class EngineImpl implements Engine {
         //two downward squares and don't include them as valid squares if they have
         //enemy pieces
 
-        if (squares[rank + 1][file].piece == null) {
+        final piece = squares[rank + 1][file].piece;
+        //if a white piece makes it to this rank, it shouldn't be able to move
+        //upward like a black piece
+
+        if (piece == null) {
+          if (isWhite) return validSquares;
           validSquares.add(
             ArrayPosition(rank: rank + 1, file: file),
           );
@@ -119,7 +181,13 @@ class EngineImpl implements Engine {
         //vertical direction, check if there are pieces on any of the
         //two upward squares and don't include them as valid squares if they have
         //enemy pieces
-        if (squares[rank - 1][file].piece == null) {
+
+        final piece = squares[rank - 1][file].piece;
+        //if a black piece makes it to this rank, it shouldn't be able to move
+        //upward like a white piece
+
+        if (piece == null) {
+          if (!isWhite) return validSquares;
           validSquares.add(
             ArrayPosition(rank: rank - 1, file: file),
           );

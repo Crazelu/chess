@@ -19,5 +19,7 @@ abstract class Engine {
   ///Plays sound when a piece is moved.
   void playSound();
 
+  ///Returns a list of coordinates `ArrayPosition(rank, file)`sss for squares where valid moves can be made to
+  ///from `currentPosition`.
   List<ArrayPosition> evaluateValidMoves(List<int> currentPosition);
 }
