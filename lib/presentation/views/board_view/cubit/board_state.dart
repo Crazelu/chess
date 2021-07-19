@@ -1,4 +1,4 @@
-import 'package:chess/engine/models/board.dart';
+import 'package:chess/engine/models/square.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class BoardState {
@@ -13,24 +13,24 @@ class InitialBoardState extends Equatable implements BoardState {
 }
 
 class LoadedBoardState extends Equatable implements BoardState {
-  final Board board;
-  const LoadedBoardState(this.board);
+  final List<List<Square>> squares;
+  const LoadedBoardState(this.squares);
 
   @override
-  List<Object?> get props => [board];
+  List<Object?> get props => [squares];
 }
 
 class BoardUpdatedState extends Equatable implements BoardState {
-  final Board board;
+  final List<List<Square>> squares;
   final List<int>? currentPosition;
   final List<int>? targetPosition;
 
   const BoardUpdatedState({
-    required this.board,
+    required this.squares,
     this.currentPosition,
     this.targetPosition,
   });
 
   @override
-  List<Object?> get props => [board, targetPosition, currentPosition];
+  List<Object?> get props => [squares, targetPosition, currentPosition];
 }

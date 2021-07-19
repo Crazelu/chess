@@ -1,15 +1,20 @@
-import 'package:chess/engine/models/board.dart';
 import 'package:chess/engine/models/square.dart';
 
+///Chess engine.
+///
+///Responsible for such things as checking if a move is valid,
+///playing sound on valid moves,
+///evaluating check and check mate,
+///and eventually figuring out best moves when it acts as an adversary.
+///
+///Allows Board to be interfaced to be able to move pieces.
 abstract class Engine {
-  final Board chessBoard;
+  ///All of the squares on the chess board.
+  List<List<Square>> get squares;
 
-  Engine(this.chessBoard);
-
-  List<List<Square>> get squares => chessBoard.squares;
-
-  ///Moves a piece from one square to another
+  ///Moves a piece from one square to another.
   void movePiece(List<int> currentPosition, List<int> targetPosition);
 
+  ///Plays sound when a piece is moved.
   void playSound();
 }

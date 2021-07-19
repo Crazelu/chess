@@ -3,12 +3,26 @@ import 'package:chess/engine/engine.dart';
 import 'package:chess/engine/models/square.dart';
 import 'package:chess/engine/models/board.dart';
 
+///Chess engine.
+///
+///Implementation of `Engine`.
+///
+///Responsible for such things as checking if a move is valid,
+///playing sound on valid moves,
+///evaluating check and check mate,
+///and eventually figuring out best moves when it acts as an adversary.
+///
+///Allows Board to be interfaced to be able to move pieces.
 class EngineImpl implements Engine {
-  final Board board;
+  late Board _board;
   final AssetsAudioPlayer player;
 
-  const EngineImpl({required this.board, required this.player});
+  EngineImpl({required Board board, required this.player}) {
+    this._board = board;
+  }
 
+  ///Initializes a chess engine, creates the chess board and an audio player object
+  ///for playing sound on moves.
   factory EngineImpl.initialize() {
     return EngineImpl(
       board: Board.createBoard(),
@@ -17,11 +31,8 @@ class EngineImpl implements Engine {
   }
 
   @override
-  Board get chessBoard => board;
-
-  @override
   void movePiece(List<int> currentPosition, List<int> targetPosition) {
-    if (board.movePiece(currentPosition, targetPosition)) {
+    if (_board.movePiece(currentPosition, targetPosition)) {
       playSound();
     }
   }
@@ -34,5 +45,5 @@ class EngineImpl implements Engine {
   }
 
   @override
-  List<List<Square>> get squares => board.squares;
+  List<List<Square>> get squares => _board.squares;
 }

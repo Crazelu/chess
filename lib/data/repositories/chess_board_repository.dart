@@ -1,37 +1,33 @@
-import 'package:chess/engine/models/board.dart';
+import 'package:chess/engine/engine.dart';
+import 'package:chess/engine/engine_impl.dart';
+import 'package:chess/engine/models/square.dart';
 
 class ChessBoardRepo {
-  late Board _chessBoard;
+  late Engine _engine;
   List<int>? _currentPosition;
   List<int>? _targetPosition;
 
-  Board createBoard() {
-    _chessBoard = Board.createBoard();
-    return _chessBoard;
+  List<List<Square>> get squares => _engine.squares;
+
+  void startEngine() {
+    _engine = EngineImpl.initialize();
   }
 
-  Board get chessBoard => _chessBoard;
-
-  List<List<int>?> onSquareTapped(
-      List<int> squarePosition, Function playSound) {
+  List<List<int>?> onSquareTapped(List<int> squarePosition) {
     if (_currentPosition == null) {
       _currentPosition = squarePosition;
     } else {
       _targetPosition = squarePosition;
 
-      movePiece(playSound);
+      movePiece();
     }
 
     return [_currentPosition, _targetPosition];
   }
 
-  void movePiece(Function playSound) {
+  void movePiece() {
     if (_currentPosition != null && _targetPosition != null) {
-      final moved = _chessBoard.movePiece(_currentPosition!, _targetPosition!);
-
-      if (moved) {
-        playSound();
-      }
+      _engine.movePiece(_currentPosition!, _targetPosition!);
 
       _currentPosition = null;
       _targetPosition = null;

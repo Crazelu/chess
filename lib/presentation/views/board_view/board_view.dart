@@ -15,7 +15,7 @@ class _BoardViewState extends State<BoardView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      context.read<BoardCubit>().createBoard();
+      context.read<BoardCubit>().startEngine();
     });
   }
 
@@ -27,12 +27,12 @@ class _BoardViewState extends State<BoardView> {
         child: BlocBuilder<BoardCubit, BoardState>(builder: (_, state) {
           if (state is LoadedBoardState) {
             return ChessBoard(
-              squares: state.board.squares,
+              squares: state.squares,
               onSquareTapped: boardCubit.onSquareTapped,
             );
           } else if (state is BoardUpdatedState) {
             return ChessBoard(
-              squares: state.board.squares,
+              squares: state.squares,
               onSquareTapped: boardCubit.onSquareTapped,
               currentPosition: state.currentPosition,
             );
