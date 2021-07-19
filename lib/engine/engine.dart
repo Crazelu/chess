@@ -1,3 +1,4 @@
+import 'package:chess/engine/models/array_position.dart';
 import 'package:chess/engine/models/square.dart';
 
 ///Chess engine.
@@ -17,4 +18,6 @@ abstract class Engine {
 
   ///Plays sound when a piece is moved.
   void playSound();
+
+  List<ArrayPosition> evaluateValidMoves(List<int> currentPosition);
 }
