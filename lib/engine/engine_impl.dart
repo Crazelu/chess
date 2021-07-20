@@ -2,6 +2,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:chess/engine/engine.dart';
 import 'package:chess/engine/models/array_position.dart';
 import 'package:chess/engine/models/piece.dart';
+import 'package:chess/engine/models/piece_type_enum.dart';
 import 'package:chess/engine/models/square.dart';
 import 'package:chess/engine/models/board.dart';
 import 'package:chess/utils/utils.dart';
@@ -19,6 +20,9 @@ import 'package:chess/utils/utils.dart';
 class EngineImpl implements Engine {
   late Board _board;
   final AssetsAudioPlayer player;
+  bool _canEnPassant = false;
+  ArrayPosition? _currentValidEnPassantSquare;
+  PieceType _lastPlayedPieceType = PieceType.black;
 
   EngineImpl({required Board board, required this.player}) {
     this._board = board;
@@ -33,18 +37,88 @@ class EngineImpl implements Engine {
     );
   }
 
+  void _setLastPlayedPieceType(bool isWhite) {
+    _lastPlayedPieceType = _getPieceType(isWhite);
+  }
+
+  PieceType _getPieceType(bool isWhite) {
+    return isWhite ? PieceType.white : PieceType.black;
+  }
+
   @override
   void movePiece(List<int> currentPosition, List<int> targetPosition) {
+    Piece? currentPiece = squares[currentPosition[0]][currentPosition[1]].piece;
+
+    //if there's no piece on the current square, this is not
+    //a valid move
+    if (currentPiece == null) return;
+
     final validSquares = evaluateValidMoves(currentPosition);
     final targetPos =
         ArrayPosition(rank: targetPosition[0], file: targetPosition[1]);
     print("Target: $targetPosition");
     print("Valids: $validSquares");
     print(validSquares.contains(targetPos));
+    print("En passant: $_currentValidEnPassantSquare");
 
-    if (validSquares.contains(targetPos)) {
+    if (validSquares.contains(targetPos) ||
+        targetPos == _currentValidEnPassantSquare) {
+      PieceType currentPieceType = _getPieceType(currentPiece.isWhite);
+
+      //same piece type cannot make two consecutive moves
+      if (currentPieceType == _lastPlayedPieceType) return;
+
+      if (_canEnPassant && targetPos == _currentValidEnPassantSquare) {
+        //handles en passant moves
+
+        final isWhitePiece = currentPiece.isWhite;
+
+        if (_board.movePiece(
+          currentPosition,
+          targetPosition,
+          enPassantSquarePosition: [
+            //if piece is a white piece, add 1 to the current valid enpassant square rank
+            //to calculate accurate offset, otherwise, subtract 1
+            isWhitePiece
+                ? _currentValidEnPassantSquare!.rank + 1
+                : _currentValidEnPassantSquare!.rank - 1,
+            _currentValidEnPassantSquare!.file,
+          ],
+        )) {
+          playSound();
+
+          _setLastPlayedPieceType(currentPiece.isWhite);
+
+          //only pawn moves can trigger en passant
+          if (currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN) {
+            _getEnPassantMove(
+              currentPosition,
+              targetPos,
+              currentPiece.isWhite,
+            );
+          } else {
+            _canEnPassant = false;
+          }
+        }
+        return;
+      }
+
+      //normal piece movement
       if (_board.movePiece(currentPosition, targetPosition)) {
         playSound();
+
+        _setLastPlayedPieceType(currentPiece.isWhite);
+
+        //only pawn moves can trigger en passant
+        if (currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN) {
+          _getEnPassantMove(
+            currentPosition,
+            targetPos,
+            currentPiece.isWhite,
+          );
+        } else {
+          _canEnPassant = false;
+        }
       }
     }
     // if (_board.movePiece(currentPosition, targetPosition)) {
@@ -77,6 +151,29 @@ class EngineImpl implements Engine {
 
       default:
         return [];
+    }
+  }
+
+  void _getEnPassantMove(
+    List<int> currentPosition,
+    ArrayPosition targetPosition,
+    bool isWhite,
+  ) {
+//for an en passant move to occur, the last pawn move must be two squares in the
+//vertical direction (along a file) to a target position
+//and new pawn move has to begin with a current position whose rank is same as
+//the last pawn move's rank and new pawn has to be of opposite color
+
+    print(currentPosition[0] - targetPosition.rank);
+
+    if ((currentPosition[0] - targetPosition.rank).abs() == 2) {
+      _canEnPassant = true;
+      _currentValidEnPassantSquare = ArrayPosition(
+          rank: isWhite ? targetPosition.rank + 1 : targetPosition.rank - 1,
+          file: targetPosition.file);
+    } else {
+      _canEnPassant = false;
+      _currentValidEnPassantSquare = null;
     }
   }
 

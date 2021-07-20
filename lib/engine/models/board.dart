@@ -44,8 +44,14 @@ class Board {
     return board;
   }
 
-  ///Moves a piece from one square to another
-  bool movePiece(List<int> currentPosition, List<int> targetPosition) {
+  ///Moves a piece from one square to another.
+  ///
+  ///If `enPassantSquarePosition` is not null, it makes an en passant move.
+  bool movePiece(
+    List<int> currentPosition,
+    List<int> targetPosition, {
+    List<int>? enPassantSquarePosition,
+  }) {
     //if the current and target positions are same, this is not a valid
     //piece movement flow, do nothing
     if (currentPosition == targetPosition) return false;
@@ -55,6 +61,14 @@ class Board {
 
     targetSquare.piece = currentSquare.piece;
     currentSquare.piece = null;
+
+    if (enPassantSquarePosition != null) {
+      //en passant move is triggered
+      Square enPassantSquare =
+          this.squares[enPassantSquarePosition[0]][enPassantSquarePosition[1]];
+
+      enPassantSquare.piece = null;
+    }
     return true;
   }
 }
