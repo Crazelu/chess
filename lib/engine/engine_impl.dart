@@ -45,9 +45,13 @@ class EngineImpl implements Engine {
     return isWhite ? PieceType.white : PieceType.black;
   }
 
+  Piece? _getPiece(List<int> currentPosition) {
+    return squares[currentPosition[0]][currentPosition[1]].piece;
+  }
+
   @override
   void movePiece(List<int> currentPosition, List<int> targetPosition) {
-    Piece? currentPiece = squares[currentPosition[0]][currentPosition[1]].piece;
+    Piece? currentPiece = _getPiece(currentPosition);
 
     //if there's no piece on the current square, this is not
     //a valid move
@@ -154,6 +158,20 @@ class EngineImpl implements Engine {
     }
   }
 
+  // List<ArrayPosition> _getValidBishopMoves(
+  //   List<int> currentPosition,
+  // ) {
+  //   List<ArrayPosition> validSquares = [];
+
+  //   try {
+  //     final piece =
+  //     final pieceType = _getPieceType(isWhite)
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  //   return validSquares;
+  // }
+
   void _getEnPassantMove(
     List<int> currentPosition,
     ArrayPosition targetPosition,
@@ -190,14 +208,14 @@ class EngineImpl implements Engine {
         //then get adjacent files by adding and subtracting 1 from the current file
         case true:
           final nextRank = rank - 1;
-          final rightAdjacentPiece = squares[nextRank][file + 1].piece;
+          final rightAdjacentPiece = _getPiece([nextRank, file + 1]);
           if (rightAdjacentPiece != null &&
               rightAdjacentPiece.isWhite != isWhite) {
             validSquares.add(
               ArrayPosition(rank: nextRank, file: file + 1),
             );
           }
-          final leftAdjacentPiece = squares[nextRank][file - 1].piece;
+          final leftAdjacentPiece = _getPiece([nextRank, file - 1]);
           if (leftAdjacentPiece != null &&
               leftAdjacentPiece.isWhite != isWhite) {
             validSquares.add(
@@ -210,14 +228,14 @@ class EngineImpl implements Engine {
           //which is essentially the current rank + 1
           //then get adjacent files by adding and subtracting 1 from the current file
           final nextRank = rank + 1;
-          final rightAdjacentPiece = squares[nextRank][file - 1].piece;
+          final rightAdjacentPiece = _getPiece([nextRank, file - 1]);
           if (rightAdjacentPiece != null &&
               rightAdjacentPiece.isWhite != isWhite) {
             validSquares.add(
               ArrayPosition(rank: nextRank, file: file - 1),
             );
           }
-          final leftAdjacentPiece = squares[nextRank][file + 1].piece;
+          final leftAdjacentPiece = _getPiece([nextRank, file + 1]);
           if (leftAdjacentPiece != null &&
               leftAdjacentPiece.isWhite != isWhite) {
             validSquares.add(
@@ -260,7 +278,7 @@ class EngineImpl implements Engine {
           //two downward squares and don't include them as valid squares if they have
           //enemy pieces
 
-          final piece = squares[rank + 1][file].piece;
+          final piece = _getPiece([rank + 1, file]);
           //if a white piece makes it to this rank, it shouldn't be able to move
           //upward like a black piece
 
@@ -272,7 +290,7 @@ class EngineImpl implements Engine {
           } else {
             return validSquares;
           }
-          if (squares[rank + 2][file].piece == null) {
+          if (_getPiece([rank + 2, file]) == null) {
             validSquares.add(
               ArrayPosition(rank: rank + 2, file: file),
             );
@@ -285,7 +303,7 @@ class EngineImpl implements Engine {
           //two upward squares and don't include them as valid squares if they have
           //enemy pieces
 
-          final piece = squares[rank - 1][file].piece;
+          final piece = _getPiece([rank - 1, file]);
           //if a black piece makes it to this rank, it shouldn't be able to move
           //upward like a white piece
 
@@ -297,7 +315,7 @@ class EngineImpl implements Engine {
           } else {
             return validSquares;
           }
-          if (squares[rank - 2][file].piece == null) {
+          if (_getPiece([rank - 2, file]) == null) {
             validSquares.add(
               ArrayPosition(rank: rank - 2, file: file),
             );
@@ -308,7 +326,7 @@ class EngineImpl implements Engine {
 
           if (isWhite) {
             //white pawns can only move one square up the board
-            if (squares[rank - 1][file].piece == null) {
+            if (_getPiece([rank - 1, file]) == null) {
               validSquares.add(
                 ArrayPosition(rank: rank - 1, file: file),
               );
@@ -317,7 +335,7 @@ class EngineImpl implements Engine {
             }
           } else {
             //black pawns can only move one square down the board
-            if (squares[rank + 1][file].piece == null) {
+            if (_getPiece([rank + 1, file]) == null) {
               validSquares.add(
                 ArrayPosition(rank: rank + 1, file: file),
               );
