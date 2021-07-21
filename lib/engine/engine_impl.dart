@@ -37,16 +37,19 @@ class EngineImpl implements Engine {
     );
   }
 
-  void _setLastPlayedPieceType(bool isWhite) {
-    _lastPlayedPieceType = _getPieceType(isWhite);
+  void _setLastPlayedPieceType(Piece piece) {
+    _lastPlayedPieceType = _getPieceType(piece);
   }
 
-  PieceType _getPieceType(bool isWhite) {
-    return isWhite ? PieceType.white : PieceType.black;
+  PieceType _getPieceType(Piece piece) {
+    return piece.image.contains("black") ? PieceType.black : PieceType.white;
   }
 
   Piece? _getPiece(List<int> currentPosition) {
-    return squares[currentPosition[0]][currentPosition[1]].piece;
+    print(currentPosition);
+    try {
+      return squares[currentPosition[0]][currentPosition[1]].piece;
+    } catch (e) {}
   }
 
   @override
@@ -60,6 +63,7 @@ class EngineImpl implements Engine {
     final validSquares = evaluateValidMoves(currentPosition);
     final targetPos =
         ArrayPosition(rank: targetPosition[0], file: targetPosition[1]);
+    print("Current: $currentPosition");
     print("Target: $targetPosition");
     print("Valids: $validSquares");
     print(validSquares.contains(targetPos));
@@ -67,7 +71,7 @@ class EngineImpl implements Engine {
 
     if (validSquares.contains(targetPos) ||
         targetPos == _currentValidEnPassantSquare) {
-      PieceType currentPieceType = _getPieceType(currentPiece.isWhite);
+      PieceType currentPieceType = _getPieceType(currentPiece);
 
       //same piece type cannot make two consecutive moves
       if (currentPieceType == _lastPlayedPieceType) return;
@@ -91,7 +95,7 @@ class EngineImpl implements Engine {
         )) {
           playSound();
 
-          _setLastPlayedPieceType(currentPiece.isWhite);
+          _setLastPlayedPieceType(currentPiece);
 
           //only pawn moves can trigger en passant
           if (currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN) {
@@ -111,7 +115,7 @@ class EngineImpl implements Engine {
       if (_board.movePiece(currentPosition, targetPosition)) {
         playSound();
 
-        _setLastPlayedPieceType(currentPiece.isWhite);
+        _setLastPlayedPieceType(currentPiece);
 
         //only pawn moves can trigger en passant
         if (currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN) {
@@ -152,25 +156,202 @@ class EngineImpl implements Engine {
       case PAWN:
       case BLACK_PAWN:
         return _getValidPawnMoves(currentPosition, currentPiece.isWhite);
+      case BISHOP:
+      case BLACK_BISHOP:
+        return _getValidBishopMoves(currentPosition);
+      case KNIGHT:
+      case BLACK_KNIGHT:
+        return _getValidKnightMoves(currentPosition);
 
       default:
         return [];
     }
   }
 
-  // List<ArrayPosition> _getValidBishopMoves(
-  //   List<int> currentPosition,
-  // ) {
-  //   List<ArrayPosition> validSquares = [];
+  List<ArrayPosition> _getValidKnightMoves(
+    List<int> currentPosition,
+  ) {
+    List<ArrayPosition> validSquares = [];
 
-  //   try {
-  //     final piece =
-  //     final pieceType = _getPieceType(isWhite)
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  //   return validSquares;
-  // }
+    try {
+      int rank = currentPosition[0];
+      int file = currentPosition[1];
+      final piece = _getPiece(currentPosition)!;
+      final pieceType = _getPieceType(piece);
+
+      if (pieceType == PieceType.white) {
+        //calculate first offset (top left corner)
+        final offset1 = [rank - 1, file - 2];
+        final offset1Piece = _getPiece(offset1);
+
+        if (offset1Piece == null || _getPieceType(offset1Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank - 1, file: file - 2),
+          );
+        }
+        //calculate second offset (topmost left corner)
+        final offset2 = [rank - 2, file - 1];
+        final offset2Piece = _getPiece(offset2);
+
+        if (offset2Piece == null || _getPieceType(offset2Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank - 2, file: file - 1),
+          );
+        }
+        //calculate third offset (topmost right corner)
+        final offset3 = [rank - 2, file + 1];
+        final offset3Piece = _getPiece(offset3);
+
+        if (offset3Piece == null || _getPieceType(offset3Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank - 2, file: file + 1),
+          );
+        }
+
+        //reversed offsets
+
+        //calculate fourth offset (bottom left corner)
+        final offset4 = [rank + 1, file + 2];
+        final offset4Piece = _getPiece(offset4);
+
+        if (offset4Piece == null || _getPieceType(offset4Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank + 1, file: file + 2),
+          );
+        }
+        //calculate fifth offset (bottom most left corner)
+        final offset5 = [rank + 2, file + 1];
+        final offset5Piece = _getPiece(offset5);
+
+        if (offset5Piece == null || _getPieceType(offset5Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank + 2, file: file + 1),
+          );
+        }
+        //calculate sixth offset (bottom most right corner)
+        final offset6 = [rank + 2, file - 1];
+        final offset6Piece = _getPiece(offset6);
+
+        if (offset6Piece == null || _getPieceType(offset6Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank + 2, file: file - 1),
+          );
+        }
+        //diagonal offset
+        final offset7 = [rank - 1, file + 2];
+        final offset7Piece = _getPiece(offset7);
+
+        if (offset7Piece == null || _getPieceType(offset7Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank - 1, file: file + 2),
+          );
+        }
+        //diagonal offset
+        final offset8 = [rank + 1, file - 2];
+        final offset8Piece = _getPiece(offset8);
+
+        if (offset8Piece == null || _getPieceType(offset8Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank + 1, file: file - 2),
+          );
+        }
+      } else {
+        //calculate first offset (top right corner)
+        final offset1 = [rank + 1, file - 2];
+        final offset1Piece = _getPiece(offset1);
+
+        if (offset1Piece == null || _getPieceType(offset1Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank + 1, file: file - 2),
+          );
+        }
+
+        //calculate second offset (topmost right corner)
+        final offset2 = [rank + 2, file - 1];
+        final offset2Piece = _getPiece(offset2);
+
+        if (offset2Piece == null || _getPieceType(offset2Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank + 2, file: file - 1),
+          );
+        }
+        //calculate third offset (topmost left corner)
+        final offset3 = [rank + 2, file + 1];
+        final offset3Piece = _getPiece(offset3);
+
+        if (offset3Piece == null || _getPieceType(offset3Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank + 2, file: file + 1),
+          );
+        }
+
+        //reverse offsets
+
+        //reverses offset1
+        final offset4 = [rank - 1, file + 2];
+        final offset4Piece = _getPiece(offset4);
+
+        if (offset4Piece == null || _getPieceType(offset4Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank - 1, file: file + 2),
+          );
+        }
+
+        //reverses offset2
+        final offset5 = [rank - 2, file + 1];
+        final offset5Piece = _getPiece(offset5);
+
+        if (offset5Piece == null || _getPieceType(offset5Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank - 2, file: file + 1),
+          );
+        }
+        //reverses offset3
+        final offset6 = [rank - 2, file - 1];
+        final offset6Piece = _getPiece(offset6);
+
+        if (offset6Piece == null || _getPieceType(offset6Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank - 2, file: file - 1),
+          );
+        }
+        //diagonal offset
+        final offset7 = [rank - 1, file - 2];
+        final offset7Piece = _getPiece(offset7);
+
+        if (offset7Piece == null || _getPieceType(offset7Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank - 1, file: file - 2),
+          );
+        }
+        //diagonal offset
+        final offset8 = [rank + 1, file + 2];
+        final offset8Piece = _getPiece(offset8);
+
+        if (offset8Piece == null || _getPieceType(offset8Piece) != pieceType) {
+          validSquares.add(
+            ArrayPosition(rank: rank + 1, file: file + 2),
+          );
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+    return validSquares;
+  }
+
+  List<ArrayPosition> _getValidBishopMoves(
+    List<int> currentPosition,
+  ) {
+    List<ArrayPosition> validSquares = [];
+
+    try {
+      int rank = currentPosition[0];
+    } catch (e) {
+      print(e);
+    }
+    return validSquares;
+  }
 
   void _getEnPassantMove(
     List<int> currentPosition,
