@@ -159,15 +159,28 @@ class EngineImpl implements Engine {
       case ROOK:
       case BLACK_ROOK:
         return _getValidRookMoves(currentPosition);
+      case QUEEN:
+      case BLACK_QUEEN:
+        return _getValidQueenMoves(currentPosition);
 
       default:
         return [];
     }
   }
 
-  List<ArrayPosition> _getValidRookMoves(
-    List<int> currentPosition,
-  ) {
+  List<ArrayPosition> _getValidQueenMoves(List<int> currentPosition) {
+    List<ArrayPosition> validSquares = [];
+    try {
+      //I figured a queen is basically a bishop and rook on steroids
+      validSquares.addAll(_getValidBishopMoves(currentPosition));
+      validSquares.addAll(_getValidRookMoves(currentPosition));
+    } catch (e) {
+      print(e);
+    }
+    return validSquares;
+  }
+
+  List<ArrayPosition> _getValidRookMoves(List<int> currentPosition) {
     List<ArrayPosition> validSquares = [];
     try {
       var currentRank = currentPosition[0];
@@ -452,12 +465,14 @@ class EngineImpl implements Engine {
       var currentFile = currentPosition[1];
       final pieceType = _getPieceType(_getPiece(currentPosition)!);
 
-      //strategy:
+      //strategies
+      //----------------------------------------------------------------------------------
       //bishops can move in four possible diagonals:
       //1: rank decreases as file increases (right upward diagonal for a white bishop)
       //2: rank decreases as file decreases (left upward diagonal for a white bishop)
       //3: rank increases as file increases (right downward diagonal for a white bishop)
       //4: rank increases as file decreases (left downward diagonal for a white bishop)
+      //-----------------------------------------------------------------------------------
 
       //first strategy
       for (int i = 0; i < 7 - file; i++) {
