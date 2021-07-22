@@ -60,10 +60,7 @@ class EngineImpl implements Engine {
     if (currentPiece == null) return;
 
     final validSquares = evaluateValidMoves(currentPosition);
-    final targetPos =
-        ArrayPosition(rank: targetPosition[0], file: targetPosition[1]);
-    print(currentPiece.image);
-    print((currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN));
+    final targetPos = ArrayPosition.fromList(targetPosition);
     print("Current: $currentPosition");
     print("Target: $targetPosition");
     print("Valids: $validSquares");
@@ -283,9 +280,7 @@ class EngineImpl implements Engine {
     return validSquares;
   }
 
-  List<ArrayPosition> _getValidKnightMoves(
-    List<int> currentPosition,
-  ) {
+  List<ArrayPosition> _getValidKnightMoves(List<int> currentPosition) {
     List<ArrayPosition> validSquares = [];
 
     try {
@@ -300,7 +295,7 @@ class EngineImpl implements Engine {
 
         if (offset1Piece == null || _getPieceType(offset1Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank - 1, file: file - 2),
+            ArrayPosition.fromList(offset1),
           );
         }
         //calculate second offset (topmost left corner)
@@ -309,7 +304,7 @@ class EngineImpl implements Engine {
 
         if (offset2Piece == null || _getPieceType(offset2Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank - 2, file: file - 1),
+            ArrayPosition.fromList(offset2),
           );
         }
         //calculate third offset (topmost right corner)
@@ -318,7 +313,7 @@ class EngineImpl implements Engine {
 
         if (offset3Piece == null || _getPieceType(offset3Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank - 2, file: file + 1),
+            ArrayPosition.fromList(offset3),
           );
         }
 
@@ -330,7 +325,7 @@ class EngineImpl implements Engine {
 
         if (offset4Piece == null || _getPieceType(offset4Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank + 1, file: file + 2),
+            ArrayPosition.fromList(offset4),
           );
         }
         //calculate fifth offset (bottom most left corner)
@@ -339,7 +334,7 @@ class EngineImpl implements Engine {
 
         if (offset5Piece == null || _getPieceType(offset5Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank + 2, file: file + 1),
+            ArrayPosition.fromList(offset5),
           );
         }
         //calculate sixth offset (bottom most right corner)
@@ -348,7 +343,7 @@ class EngineImpl implements Engine {
 
         if (offset6Piece == null || _getPieceType(offset6Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank + 2, file: file - 1),
+            ArrayPosition.fromList(offset6),
           );
         }
         //diagonal offset
@@ -357,7 +352,7 @@ class EngineImpl implements Engine {
 
         if (offset7Piece == null || _getPieceType(offset7Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank - 1, file: file + 2),
+            ArrayPosition.fromList(offset7),
           );
         }
         //diagonal offset
@@ -366,7 +361,7 @@ class EngineImpl implements Engine {
 
         if (offset8Piece == null || _getPieceType(offset8Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank + 1, file: file - 2),
+            ArrayPosition.fromList(offset8),
           );
         }
       } else {
@@ -376,7 +371,7 @@ class EngineImpl implements Engine {
 
         if (offset1Piece == null || _getPieceType(offset1Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank + 1, file: file - 2),
+            ArrayPosition.fromList(offset1),
           );
         }
 
@@ -386,7 +381,7 @@ class EngineImpl implements Engine {
 
         if (offset2Piece == null || _getPieceType(offset2Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank + 2, file: file - 1),
+            ArrayPosition.fromList(offset2),
           );
         }
         //calculate third offset (topmost left corner)
@@ -395,7 +390,7 @@ class EngineImpl implements Engine {
 
         if (offset3Piece == null || _getPieceType(offset3Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank + 2, file: file + 1),
+            ArrayPosition.fromList(offset3),
           );
         }
 
@@ -407,7 +402,7 @@ class EngineImpl implements Engine {
 
         if (offset4Piece == null || _getPieceType(offset4Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank - 1, file: file + 2),
+            ArrayPosition.fromList(offset4),
           );
         }
 
@@ -417,7 +412,7 @@ class EngineImpl implements Engine {
 
         if (offset5Piece == null || _getPieceType(offset5Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank - 2, file: file + 1),
+            ArrayPosition.fromList(offset5),
           );
         }
         //reverses offset3
@@ -426,7 +421,7 @@ class EngineImpl implements Engine {
 
         if (offset6Piece == null || _getPieceType(offset6Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank - 2, file: file - 1),
+            ArrayPosition.fromList(offset6),
           );
         }
         //diagonal offset
@@ -435,7 +430,7 @@ class EngineImpl implements Engine {
 
         if (offset7Piece == null || _getPieceType(offset7Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank - 1, file: file - 2),
+            ArrayPosition.fromList(offset7),
           );
         }
         //diagonal offset
@@ -444,7 +439,7 @@ class EngineImpl implements Engine {
 
         if (offset8Piece == null || _getPieceType(offset8Piece) != pieceType) {
           validSquares.add(
-            ArrayPosition(rank: rank + 1, file: file + 2),
+            ArrayPosition.fromList(offset8),
           );
         }
       }
@@ -606,8 +601,9 @@ class EngineImpl implements Engine {
     if ((currentPosition[0] - targetPosition.rank).abs() == 2) {
       _canEnPassant = true;
       _currentValidEnPassantSquare = ArrayPosition(
-          rank: isWhite ? targetPosition.rank + 1 : targetPosition.rank - 1,
-          file: targetPosition.file);
+        rank: isWhite ? targetPosition.rank + 1 : targetPosition.rank - 1,
+        file: targetPosition.file,
+      );
     } else {
       _canEnPassant = false;
       _currentValidEnPassantSquare = null;
@@ -631,14 +627,14 @@ class EngineImpl implements Engine {
           if (rightAdjacentPiece != null &&
               rightAdjacentPiece.isWhite != isWhite) {
             validSquares.add(
-              ArrayPosition(rank: nextRank, file: file + 1),
+              ArrayPosition.fromList([nextRank, file + 1]),
             );
           }
           final leftAdjacentPiece = _getPiece([nextRank, file - 1]);
           if (leftAdjacentPiece != null &&
               leftAdjacentPiece.isWhite != isWhite) {
             validSquares.add(
-              ArrayPosition(rank: nextRank, file: file - 1),
+              ArrayPosition.fromList([nextRank, file - 1]),
             );
           }
           break;
@@ -651,14 +647,14 @@ class EngineImpl implements Engine {
           if (rightAdjacentPiece != null &&
               rightAdjacentPiece.isWhite != isWhite) {
             validSquares.add(
-              ArrayPosition(rank: nextRank, file: file - 1),
+              ArrayPosition.fromList([nextRank, file - 1]),
             );
           }
           final leftAdjacentPiece = _getPiece([nextRank, file + 1]);
           if (leftAdjacentPiece != null &&
               leftAdjacentPiece.isWhite != isWhite) {
             validSquares.add(
-              ArrayPosition(rank: nextRank, file: file + 1),
+              ArrayPosition.fromList([nextRank, file + 1]),
             );
           }
       }
@@ -704,14 +700,14 @@ class EngineImpl implements Engine {
           if (piece == null) {
             if (isWhite) return validSquares;
             validSquares.add(
-              ArrayPosition(rank: rank + 1, file: file),
+              ArrayPosition.fromList([rank + 1, file]),
             );
           } else {
             return validSquares;
           }
           if (_getPiece([rank + 2, file]) == null) {
             validSquares.add(
-              ArrayPosition(rank: rank + 2, file: file),
+              ArrayPosition.fromList([rank + 2, file]),
             );
           }
           break;
@@ -729,14 +725,14 @@ class EngineImpl implements Engine {
           if (piece == null) {
             if (!isWhite) return validSquares;
             validSquares.add(
-              ArrayPosition(rank: rank - 1, file: file),
+              ArrayPosition.fromList([rank - 1, file]),
             );
           } else {
             return validSquares;
           }
           if (_getPiece([rank - 2, file]) == null) {
             validSquares.add(
-              ArrayPosition(rank: rank - 2, file: file),
+              ArrayPosition.fromList([rank - 2, file]),
             );
           }
           break;
@@ -747,7 +743,7 @@ class EngineImpl implements Engine {
             //white pawns can only move one square up the board
             if (_getPiece([rank - 1, file]) == null) {
               validSquares.add(
-                ArrayPosition(rank: rank - 1, file: file),
+                ArrayPosition.fromList([rank - 1, file]),
               );
             } else {
               return validSquares;
@@ -756,7 +752,7 @@ class EngineImpl implements Engine {
             //black pawns can only move one square down the board
             if (_getPiece([rank + 1, file]) == null) {
               validSquares.add(
-                ArrayPosition(rank: rank + 1, file: file),
+                ArrayPosition.fromList([rank + 1, file]),
               );
             } else {
               return validSquares;
