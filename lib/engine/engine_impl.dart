@@ -447,7 +447,129 @@ class EngineImpl implements Engine {
     List<ArrayPosition> validSquares = [];
 
     try {
-      int rank = currentPosition[0];
+      final file = currentPosition[1];
+      var currentRank = currentPosition[0];
+      var currentFile = currentPosition[1];
+      final pieceType = _getPieceType(_getPiece(currentPosition)!);
+
+      //strategy:
+      //bishops can move in four possible diagonals:
+      //1: rank decreases as file increases (right upward diagonal for a white bishop)
+      //2: rank decreases as file decreases (left upward diagonal for a white bishop)
+      //3: rank increases as file increases (right downward diagonal for a white bishop)
+      //4: rank increases as file decreases (left downward diagonal for a white bishop)
+
+      //first strategy
+      for (int i = 0; i < 7 - file; i++) {
+        if (currentRank - 1 < 0) break;
+
+        final nextPiece = _getPiece([currentRank - 1, currentFile + 1]);
+
+        if (nextPiece == null) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank - 1, currentFile + 1],
+            ),
+          );
+        } else if (pieceType != _getPieceType(nextPiece)) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank - 1, currentFile + 1],
+            ),
+          );
+          break;
+        } else {
+          break;
+        }
+        currentRank--;
+        currentFile++;
+      }
+
+      currentRank = currentPosition[0];
+      currentFile = currentPosition[1];
+
+      //second strategy
+      for (int i = 0; i < file; i++) {
+        if (currentRank - 1 < 0) break;
+
+        final nextPiece = _getPiece([currentRank - 1, currentFile - 1]);
+
+        if (nextPiece == null) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank - 1, currentFile - 1],
+            ),
+          );
+        } else if (pieceType != _getPieceType(nextPiece)) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank - 1, currentFile - 1],
+            ),
+          );
+          break;
+        } else {
+          break;
+        }
+        currentRank--;
+        currentFile--;
+      }
+
+      currentRank = currentPosition[0];
+      currentFile = currentPosition[1];
+
+      //third strategy
+      for (int i = 0; i < 7; i++) {
+        if (currentRank + 1 > 7) break;
+        final nextPiece = _getPiece([currentRank + 1, currentFile + 1]);
+
+        if (nextPiece == null) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank + 1, currentFile + 1],
+            ),
+          );
+        } else if (pieceType != _getPieceType(nextPiece)) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank + 1, currentFile + 1],
+            ),
+          );
+          break;
+        } else {
+          break;
+        }
+        currentRank++;
+        currentFile++;
+      }
+
+      currentRank = currentPosition[0];
+      currentFile = currentPosition[1];
+
+      //fourth strategy
+      for (int i = 0; i < file; i++) {
+        if (currentFile - 1 < 0) break;
+
+        final nextPiece = _getPiece([currentRank + 1, currentFile - 1]);
+
+        if (nextPiece == null) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank + 1, currentFile - 1],
+            ),
+          );
+        } else if (pieceType != _getPieceType(nextPiece)) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank + 1, currentFile - 1],
+            ),
+          );
+          break;
+        } else {
+          break;
+        }
+        currentRank++;
+        currentFile--;
+      }
     } catch (e) {
       print(e);
     }
