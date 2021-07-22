@@ -98,17 +98,6 @@ class EngineImpl implements Engine {
           _setLastPlayedPieceType(currentPiece);
           _canEnPassant = false;
           _currentValidEnPassantSquare = null;
-
-          //only pawn moves can trigger en passant
-          // if (currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN) {
-          //   _getEnPassantMove(
-          //     currentPosition,
-          //     targetPos,
-          //     currentPiece.isWhite,
-          //   );
-          // } else {
-          //   _canEnPassant = false;
-          // }
         }
         return;
       }
@@ -185,100 +174,97 @@ class EngineImpl implements Engine {
       var currentFile = currentPosition[1];
       final pieceType = _getPieceType(_getPiece(currentPosition)!);
 
-      if (pieceType == PieceType.black) {
-        //black rooks can move down a file (increments the file coordinate)
-        //and along a file
-
-        while (currentFile < 7) {
-          //moves black rook to the right side of the board
-          final nextPiece = _getPiece([currentRank, currentFile + 1]);
-          if (nextPiece == null) {
-            validSquares.add(
-              ArrayPosition.fromList(
-                [currentRank, currentFile + 1],
-              ),
-            );
-          } else if (pieceType != _getPieceType(nextPiece)) {
-            validSquares.add(
-              ArrayPosition.fromList(
-                [currentRank, currentFile + 1],
-              ),
-            );
-          } else {
-            break;
-          }
-          currentFile++;
+      while (currentFile < 7) {
+        //moves rook to the right side of the board
+        final nextPiece = _getPiece([currentRank, currentFile + 1]);
+        if (nextPiece == null) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank, currentFile + 1],
+            ),
+          );
+        } else if (pieceType != _getPieceType(nextPiece)) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank, currentFile + 1],
+            ),
+          );
+          break;
+        } else {
+          break;
         }
-        currentFile = currentPosition[1];
-        while (currentFile > 0) {
-          //moves black rook to the left side of the board
-          final nextPiece = _getPiece([currentRank, currentFile - 1]);
-          if (nextPiece == null) {
-            validSquares.add(
-              ArrayPosition.fromList(
-                [currentRank, currentFile - 1],
-              ),
-            );
-          } else if (pieceType != _getPieceType(nextPiece)) {
-            validSquares.add(
-              ArrayPosition.fromList(
-                [currentRank, currentFile - 1],
-              ),
-            );
-          } else {
-            break;
-          }
-          currentFile--;
+        currentFile++;
+      }
+      currentFile = currentPosition[1];
+
+      while (currentFile > 0) {
+        //moves rook to the left side of the board
+        final nextPiece = _getPiece([currentRank, currentFile - 1]);
+        if (nextPiece == null) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank, currentFile - 1],
+            ),
+          );
+        } else if (pieceType != _getPieceType(nextPiece)) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank, currentFile - 1],
+            ),
+          );
+          break;
+        } else {
+          break;
         }
-        currentFile = currentPosition[1];
+        currentFile--;
+      }
+      currentFile = currentPosition[1];
 
-        while (currentRank < 7) {
-          //moves black rook up a file
-          final nextPiece = _getPiece([currentRank + 1, currentFile]);
-          if (nextPiece == null) {
-            validSquares.add(
-              ArrayPosition.fromList(
-                [currentRank + 1, currentFile],
-              ),
-            );
-          } else if (pieceType != _getPieceType(nextPiece)) {
-            validSquares.add(
-              ArrayPosition.fromList(
-                [currentRank + 1, currentFile],
-              ),
-            );
-          } else {
-            break;
-          }
-          currentRank++;
+      while (currentRank < 7) {
+        //moves rook up a file
+        final nextPiece = _getPiece([currentRank + 1, currentFile]);
+        if (nextPiece == null) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank + 1, currentFile],
+            ),
+          );
+        } else if (pieceType != _getPieceType(nextPiece)) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank + 1, currentFile],
+            ),
+          );
+          break;
+        } else {
+          break;
+        }
+        currentRank++;
+      }
+
+      currentRank = currentPosition[0];
+
+      while (currentRank > 0) {
+        //moves rook down a file
+        final nextPiece = _getPiece([currentRank - 1, currentFile]);
+        if (nextPiece == null) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank - 1, currentFile],
+            ),
+          );
+        } else if (pieceType != _getPieceType(nextPiece)) {
+          validSquares.add(
+            ArrayPosition.fromList(
+              [currentRank - 1, currentFile],
+            ),
+          );
+          break;
+        } else {
+          break;
         }
 
-        currentRank = currentPosition[0];
-
-        while (currentRank > 0) {
-          //moves black rook down a file
-          final nextPiece = _getPiece([currentRank - 1, currentFile]);
-          if (nextPiece == null) {
-            validSquares.add(
-              ArrayPosition.fromList(
-                [currentRank - 1, currentFile],
-              ),
-            );
-          } else if (pieceType != _getPieceType(nextPiece)) {
-            validSquares.add(
-              ArrayPosition.fromList(
-                [currentRank - 1, currentFile],
-              ),
-            );
-          } else {
-            break;
-          }
-
-          currentRank--;
-        }
-      } else {
-        //white rooks can move down a file (decrements the file coordinate)
-        //and along a file
+        currentRank--;
       }
     } catch (e) {}
     return validSquares;
