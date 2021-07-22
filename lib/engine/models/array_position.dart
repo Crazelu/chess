@@ -10,6 +10,10 @@ class ArrayPosition extends Equatable {
 
   ArrayPosition({required this.rank, required this.file});
 
+  factory ArrayPosition.fromList(List<int> pos) {
+    return ArrayPosition(rank: pos[0], file: pos[1]);
+  }
+
   @override
   List<Object?> get props => [rank, file];
 }

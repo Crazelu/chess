@@ -46,7 +46,6 @@ class EngineImpl implements Engine {
   }
 
   Piece? _getPiece(List<int> currentPosition) {
-    print(currentPosition);
     try {
       return squares[currentPosition[0]][currentPosition[1]].piece;
     } catch (e) {}
@@ -63,20 +62,21 @@ class EngineImpl implements Engine {
     final validSquares = evaluateValidMoves(currentPosition);
     final targetPos =
         ArrayPosition(rank: targetPosition[0], file: targetPosition[1]);
+    print(currentPiece.image);
+    print((currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN));
     print("Current: $currentPosition");
     print("Target: $targetPosition");
     print("Valids: $validSquares");
     print(validSquares.contains(targetPos));
     print("En passant: $_currentValidEnPassantSquare");
 
-    if (validSquares.contains(targetPos) ||
-        targetPos == _currentValidEnPassantSquare) {
-      PieceType currentPieceType = _getPieceType(currentPiece);
+    //same piece type cannot make two consecutive moves
+    // if (_getPieceType(currentPiece) == _lastPlayedPieceType) return;
 
-      //same piece type cannot make two consecutive moves
-      if (currentPieceType == _lastPlayedPieceType) return;
-
-      if (_canEnPassant && targetPos == _currentValidEnPassantSquare) {
+    if (targetPos == _currentValidEnPassantSquare) {
+      if (_canEnPassant &&
+          targetPos == _currentValidEnPassantSquare &&
+          (currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN)) {
         //handles en passant moves
 
         final isWhitePiece = currentPiece.isWhite;
@@ -96,21 +96,25 @@ class EngineImpl implements Engine {
           playSound();
 
           _setLastPlayedPieceType(currentPiece);
+          _canEnPassant = false;
+          _currentValidEnPassantSquare = null;
 
           //only pawn moves can trigger en passant
-          if (currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN) {
-            _getEnPassantMove(
-              currentPosition,
-              targetPos,
-              currentPiece.isWhite,
-            );
-          } else {
-            _canEnPassant = false;
-          }
+          // if (currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN) {
+          //   _getEnPassantMove(
+          //     currentPosition,
+          //     targetPos,
+          //     currentPiece.isWhite,
+          //   );
+          // } else {
+          //   _canEnPassant = false;
+          // }
         }
         return;
       }
+    }
 
+    if (validSquares.contains(targetPos)) {
       //normal piece movement
       if (_board.movePiece(currentPosition, targetPosition)) {
         playSound();
@@ -126,6 +130,7 @@ class EngineImpl implements Engine {
           );
         } else {
           _canEnPassant = false;
+          _currentValidEnPassantSquare = null;
         }
       }
     }
@@ -162,10 +167,121 @@ class EngineImpl implements Engine {
       case KNIGHT:
       case BLACK_KNIGHT:
         return _getValidKnightMoves(currentPosition);
+      case ROOK:
+      case BLACK_ROOK:
+        return _getValidRookMoves(currentPosition);
 
       default:
         return [];
     }
+  }
+
+  List<ArrayPosition> _getValidRookMoves(
+    List<int> currentPosition,
+  ) {
+    List<ArrayPosition> validSquares = [];
+    try {
+      var currentRank = currentPosition[0];
+      var currentFile = currentPosition[1];
+      final pieceType = _getPieceType(_getPiece(currentPosition)!);
+
+      if (pieceType == PieceType.black) {
+        //black rooks can move down a file (increments the file coordinate)
+        //and along a file
+
+        while (currentFile < 7) {
+          //moves black rook to the right side of the board
+          final nextPiece = _getPiece([currentRank, currentFile + 1]);
+          if (nextPiece == null) {
+            validSquares.add(
+              ArrayPosition.fromList(
+                [currentRank, currentFile + 1],
+              ),
+            );
+          } else if (pieceType != _getPieceType(nextPiece)) {
+            validSquares.add(
+              ArrayPosition.fromList(
+                [currentRank, currentFile + 1],
+              ),
+            );
+          } else {
+            break;
+          }
+          currentFile++;
+        }
+        currentFile = currentPosition[1];
+        while (currentFile > 0) {
+          //moves black rook to the left side of the board
+          final nextPiece = _getPiece([currentRank, currentFile - 1]);
+          if (nextPiece == null) {
+            validSquares.add(
+              ArrayPosition.fromList(
+                [currentRank, currentFile - 1],
+              ),
+            );
+          } else if (pieceType != _getPieceType(nextPiece)) {
+            validSquares.add(
+              ArrayPosition.fromList(
+                [currentRank, currentFile - 1],
+              ),
+            );
+          } else {
+            break;
+          }
+          currentFile--;
+        }
+        currentFile = currentPosition[1];
+
+        while (currentRank < 7) {
+          //moves black rook up a file
+          final nextPiece = _getPiece([currentRank + 1, currentFile]);
+          if (nextPiece == null) {
+            validSquares.add(
+              ArrayPosition.fromList(
+                [currentRank + 1, currentFile],
+              ),
+            );
+          } else if (pieceType != _getPieceType(nextPiece)) {
+            validSquares.add(
+              ArrayPosition.fromList(
+                [currentRank + 1, currentFile],
+              ),
+            );
+          } else {
+            break;
+          }
+          currentRank++;
+        }
+
+        currentRank = currentPosition[0];
+
+        while (currentRank > 0) {
+          //moves black rook down a file
+          final nextPiece = _getPiece([currentRank - 1, currentFile]);
+          if (nextPiece == null) {
+            validSquares.add(
+              ArrayPosition.fromList(
+                [currentRank - 1, currentFile],
+              ),
+            );
+          } else if (pieceType != _getPieceType(nextPiece)) {
+            validSquares.add(
+              ArrayPosition.fromList(
+                [currentRank - 1, currentFile],
+              ),
+            );
+          } else {
+            break;
+          }
+
+          currentRank--;
+        }
+      } else {
+        //white rooks can move down a file (decrements the file coordinate)
+        //and along a file
+      }
+    } catch (e) {}
+    return validSquares;
   }
 
   List<ArrayPosition> _getValidKnightMoves(
@@ -176,8 +292,7 @@ class EngineImpl implements Engine {
     try {
       int rank = currentPosition[0];
       int file = currentPosition[1];
-      final piece = _getPiece(currentPosition)!;
-      final pieceType = _getPieceType(piece);
+      final pieceType = _getPieceType(_getPiece(currentPosition)!);
 
       if (pieceType == PieceType.white) {
         //calculate first offset (top left corner)
