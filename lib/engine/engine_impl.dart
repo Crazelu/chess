@@ -102,18 +102,26 @@ class EngineImpl implements Engine {
 
           _setLastPlayedPieceType(currentPiece);
 
+          //set last moves
+          //this is useful for evaluating whether the piece
+          //on that square still gives a check immediately after another piece
+          //has moved
           if (isWhitePiece) {
             _lastWhiteMove = targetPos;
           } else {
             _lastBlackMove = targetPos;
           }
 
+          //evaluate if the previously moved piece still(or now) gives
+          //a check immediately after a piece of the opposite color has moved
           if (isWhitePiece && _lastBlackMove != null) {
             evaluateCheck([_lastBlackMove!.rank, _lastBlackMove!.file], false);
           }
           if (!isWhitePiece && _lastWhiteMove != null) {
             evaluateCheck([_lastWhiteMove!.rank, _lastWhiteMove!.file], true);
           }
+
+          //evaluate if the piece which just moved gives a check
           evaluateCheck(targetPosition, isWhitePiece);
 
           _canEnPassant = false;
@@ -129,12 +137,18 @@ class EngineImpl implements Engine {
         playSound();
         _setLastPlayedPieceType(currentPiece);
 
+        //set last moves
+        //this is useful for evaluating whether the piece
+        //on that square still gives a check immediately after another piece
+        //has moved
         if (isWhitePiece) {
           _lastWhiteMove = targetPos;
         } else {
           _lastBlackMove = targetPos;
         }
 
+        //keep track of the positions of the kings
+        //to always evaluate checks
         if (currentPiece.image == KING) {
           _whiteKingPosition = targetPos;
         }
@@ -142,12 +156,16 @@ class EngineImpl implements Engine {
           _blackKingPosition = targetPos;
         }
 
+        //evaluate if the previously moved piece still(or now) gives
+        //a check immediately after a piece of the opposite color has moved
         if (isWhitePiece && _lastBlackMove != null) {
           evaluateCheck([_lastBlackMove!.rank, _lastBlackMove!.file], false);
         }
         if (!isWhitePiece && _lastWhiteMove != null) {
           evaluateCheck([_lastWhiteMove!.rank, _lastWhiteMove!.file], true);
         }
+
+        //evaluate if the piece which just moved gives a check
         evaluateCheck(targetPosition, isWhitePiece);
 
         //only pawn moves can trigger en passant
