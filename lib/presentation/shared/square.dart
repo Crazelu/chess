@@ -6,27 +6,41 @@ class SquareWidget extends StatelessWidget {
   final List<int>? currentPosition;
   final Square square;
   final Function(List<int>) onSquareTapped;
+  final bool isChecked;
+
   const SquareWidget({
     Key? key,
     required this.square,
-    this.currentPosition,
     required this.onSquareTapped,
+    this.isChecked = false,
+    this.currentPosition,
   }) : super(key: key);
 
   BorderSide get borderSide => BorderSide(
         color: Colors.blueAccent,
         width: 2,
       );
+  BorderSide get checkedBorderSide => BorderSide(
+        color: Colors.redAccent,
+        width: 2,
+      );
 
   //Add a border to indicate that the square is selected at the time
-  Border? get border => currentPosition == square.arrayPos
+  Border? get border => isChecked
       ? Border(
-          top: borderSide,
-          bottom: borderSide,
-          left: borderSide,
-          right: borderSide,
+          top: checkedBorderSide,
+          bottom: checkedBorderSide,
+          left: checkedBorderSide,
+          right: checkedBorderSide,
         )
-      : null;
+      : currentPosition == square.arrayPos
+          ? Border(
+              top: borderSide,
+              bottom: borderSide,
+              left: borderSide,
+              right: borderSide,
+            )
+          : null;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

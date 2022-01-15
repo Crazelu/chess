@@ -28,6 +28,7 @@ class ChessBoard extends StatelessWidget {
                       square: square,
                       onSquareTapped: onSquareTapped,
                       currentPosition: currentPosition,
+                      isChecked: square.piece?.isChecked ?? false,
                     ),
                   )
                   .toList(),

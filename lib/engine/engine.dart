@@ -1,4 +1,5 @@
 import 'package:chess/engine/models/array_position.dart';
+import 'package:chess/engine/models/piece.dart';
 import 'package:chess/engine/models/square.dart';
 
 ///Chess engine.
@@ -19,7 +20,15 @@ abstract class Engine {
   ///Plays sound when a piece is moved.
   void playSound();
 
-  ///Returns a list of coordinates `ArrayPosition(rank, file)`sss for squares where valid moves can be made to
-  ///from `currentPosition`.
+  ///Returns a list of coordinates `ArrayPosition(rank, file)` for squares
+  ///where valid moves can be made to from `currentPosition`.
   List<ArrayPosition> evaluateValidMoves(List<int> currentPosition);
+
+  ///If [isWhite] is `true`:
+  ///Checks if a black king is on a square
+  ///for which the piece at [currentPosition] can make a valid move to.
+  ///
+  ///Otherwise, checks if a white king is on a square
+  ///for which the piece at [currentPosition] can make a valid move to.
+  void evaluateCheck(List<int> currentPosition, bool isWhite);
 }

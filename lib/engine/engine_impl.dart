@@ -24,8 +24,16 @@ class EngineImpl implements Engine {
   ArrayPosition? _currentValidEnPassantSquare;
   PieceType _lastPlayedPieceType = PieceType.black;
 
+  late ArrayPosition _blackKingPosition;
+  late ArrayPosition _whiteKingPosition;
+
+  ArrayPosition? _lastBlackMove;
+  ArrayPosition? _lastWhiteMove;
+
   EngineImpl({required Board board, required this.player}) {
     this._board = board;
+    this._blackKingPosition = ArrayPosition(rank: 0, file: 4);
+    this._whiteKingPosition = ArrayPosition(rank: 7, file: 4);
   }
 
   ///Initializes a chess engine, creates the chess board and an audio player object
@@ -68,15 +76,15 @@ class EngineImpl implements Engine {
     print("En passant: $_currentValidEnPassantSquare");
 
     //same piece type cannot make two consecutive moves
-    // if (_getPieceType(currentPiece) == _lastPlayedPieceType) return;
+    if (_getPieceType(currentPiece) == _lastPlayedPieceType) return;
+
+    final isWhitePiece = currentPiece.isWhite;
 
     if (targetPos == _currentValidEnPassantSquare) {
       if (_canEnPassant &&
           targetPos == _currentValidEnPassantSquare &&
           (currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN)) {
         //handles en passant moves
-
-        final isWhitePiece = currentPiece.isWhite;
 
         if (_board.movePiece(
           currentPosition,
@@ -93,6 +101,21 @@ class EngineImpl implements Engine {
           playSound();
 
           _setLastPlayedPieceType(currentPiece);
+
+          if (isWhitePiece) {
+            _lastWhiteMove = targetPos;
+          } else {
+            _lastBlackMove = targetPos;
+          }
+
+          if (isWhitePiece && _lastBlackMove != null) {
+            evaluateCheck([_lastBlackMove!.rank, _lastBlackMove!.file], false);
+          }
+          if (!isWhitePiece && _lastWhiteMove != null) {
+            evaluateCheck([_lastWhiteMove!.rank, _lastWhiteMove!.file], true);
+          }
+          evaluateCheck(targetPosition, isWhitePiece);
+
           _canEnPassant = false;
           _currentValidEnPassantSquare = null;
         }
@@ -104,8 +127,28 @@ class EngineImpl implements Engine {
       //normal piece movement
       if (_board.movePiece(currentPosition, targetPosition)) {
         playSound();
-
         _setLastPlayedPieceType(currentPiece);
+
+        if (isWhitePiece) {
+          _lastWhiteMove = targetPos;
+        } else {
+          _lastBlackMove = targetPos;
+        }
+
+        if (currentPiece.image == KING) {
+          _whiteKingPosition = targetPos;
+        }
+        if (currentPiece.image == BLACK_KING) {
+          _blackKingPosition = targetPos;
+        }
+
+        if (isWhitePiece && _lastBlackMove != null) {
+          evaluateCheck([_lastBlackMove!.rank, _lastBlackMove!.file], false);
+        }
+        if (!isWhitePiece && _lastWhiteMove != null) {
+          evaluateCheck([_lastWhiteMove!.rank, _lastWhiteMove!.file], true);
+        }
+        evaluateCheck(targetPosition, isWhitePiece);
 
         //only pawn moves can trigger en passant
         if (currentPiece.image == PAWN || currentPiece.image == BLACK_PAWN) {
@@ -120,9 +163,6 @@ class EngineImpl implements Engine {
         }
       }
     }
-    // if (_board.movePiece(currentPosition, targetPosition)) {
-    //   playSound();
-    // }
   }
 
   @override
@@ -764,5 +804,28 @@ class EngineImpl implements Engine {
     }
 
     return validSquares;
+  }
+
+  @override
+  void evaluateCheck(List<int> currentPosition, bool isWhite) {
+    List<int> targetPosition;
+
+    if (isWhite) {
+      targetPosition = [_blackKingPosition.rank, _blackKingPosition.file];
+    } else {
+      targetPosition = [_whiteKingPosition.rank, _whiteKingPosition.file];
+    }
+    Piece? king = _getPiece(targetPosition);
+
+    if (king == null) return;
+
+    final isChecked = evaluateValidMoves(currentPosition)
+        .contains(ArrayPosition.fromList(targetPosition));
+
+    print(
+        "isChecked -> $isChecked, kingPos -> $targetPosition, isWhite -> $isWhite");
+
+    _board.squares[targetPosition[0]][targetPosition[1]].piece =
+        king.copyWith(isChecked: isChecked);
   }
 }

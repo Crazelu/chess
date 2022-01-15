@@ -10,10 +10,24 @@ class Piece {
   ///Indicates whether piece is a white piece or not.
   final bool isWhite;
 
+  ///Indicates whether this piece is checked.
+  ///
+  ///Ideally used for the kings.
+  final bool isChecked;
+
   const Piece({
     required this.image,
     this.isWhite = true,
+    this.isChecked = false,
   });
+
+  Piece copyWith({bool? isChecked}) {
+    return Piece(
+      image: this.image,
+      isWhite: this.isWhite,
+      isChecked: isChecked ?? this.isChecked,
+    );
+  }
 
   ///Constructs a Piece object whose image is specified by `initialPosition`
   ///and color by `isWhite`.

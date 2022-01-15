@@ -24,13 +24,20 @@ class BoardUpdatedState extends Equatable implements BoardState {
   final List<List<Square>> squares;
   final List<int>? currentPosition;
   final List<int>? targetPosition;
+  final bool isChecked;
 
   const BoardUpdatedState({
     required this.squares,
+    this.isChecked = false,
     this.currentPosition,
     this.targetPosition,
   });
 
   @override
-  List<Object?> get props => [squares, targetPosition, currentPosition];
+  List<Object?> get props => [
+        squares,
+        isChecked,
+        targetPosition,
+        currentPosition,
+      ];
 }
