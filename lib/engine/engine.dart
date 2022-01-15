@@ -1,5 +1,4 @@
 import 'package:chess/engine/models/array_position.dart';
-import 'package:chess/engine/models/piece.dart';
 import 'package:chess/engine/models/square.dart';
 
 ///Chess engine.

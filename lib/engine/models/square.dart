@@ -20,7 +20,7 @@ class Square {
   ///Represents an individual square on a chess board at
   ///position specified by `position`.
   ///
-  ///The square is a light square if `light = true`. Otherwise,
+  ///The square is a light square if `isLightSquare = true`. Otherwise,
   ///the square is a dark square.
   Square({
     required this.isLightSquare,

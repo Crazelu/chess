@@ -78,6 +78,9 @@ class EngineImpl implements Engine {
     //same piece type cannot make two consecutive moves
     if (_getPieceType(currentPiece) == _lastPlayedPieceType) return;
 
+    //king cannot be captured
+    if (_isAttemptingToCaptureKing(targetPos)) return;
+
     final isWhitePiece = currentPiece.isWhite;
 
     if (targetPos == _currentValidEnPassantSquare) {
@@ -217,6 +220,9 @@ class EngineImpl implements Engine {
       case QUEEN:
       case BLACK_QUEEN:
         return _getValidQueenMoves(currentPosition);
+      case KING:
+      case BLACK_KING:
+        return _getValidKingMoves(currentPosition);
 
       default:
         return [];
@@ -227,11 +233,9 @@ class EngineImpl implements Engine {
     List<ArrayPosition> validSquares = [];
     try {
       //I figured a queen is basically a bishop and rook on steroids
-      validSquares.addAll(_getValidBishopMoves(currentPosition));
-      validSquares.addAll(_getValidRookMoves(currentPosition));
-    } catch (e) {
-      print(e);
-    }
+      validSquares += _getValidBishopMoves(currentPosition);
+      validSquares += _getValidRookMoves(currentPosition);
+    } catch (e) {}
     return validSquares;
   }
 
@@ -501,9 +505,7 @@ class EngineImpl implements Engine {
           );
         }
       }
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
     return validSquares;
   }
 
@@ -716,9 +718,7 @@ class EngineImpl implements Engine {
             );
           }
       }
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
 
     return validSquares;
   }
@@ -732,7 +732,7 @@ class EngineImpl implements Engine {
 
     int rank = currentPosition[0];
     int file = currentPosition[1];
-    print(currentPosition);
+
     List<ArrayPosition> validSquares = [];
 
     try {
@@ -817,17 +817,132 @@ class EngineImpl implements Engine {
             }
           }
       }
-    } catch (e) {
-      print(e);
+    } catch (e) {}
+
+    return validSquares;
+  }
+
+  List<ArrayPosition> _getValidKingMoves(
+    List<int> currentPosition, {
+    bool recursive = true,
+  }) {
+    List<ArrayPosition> validSquares = [];
+    List<ArrayPosition> invalidSquares = [];
+    final currentPos = ArrayPosition.fromList(currentPosition);
+    final currentPieceType = _getPieceType(_getPiece(currentPosition)!);
+
+    if (currentPieceType == PieceType.black && recursive) {
+      invalidSquares = _getValidKingMoves(
+        [_whiteKingPosition.rank, _whiteKingPosition.file],
+        recursive: false,
+      );
+    }
+    if (currentPieceType == PieceType.white && recursive) {
+      invalidSquares = _getValidKingMoves(
+        [_blackKingPosition.rank, _blackKingPosition.file],
+        recursive: false,
+      );
+    }
+
+    //left side
+    final leftOffset = [currentPos.rank, currentPos.file - 1];
+    final leftPiece = _getPiece(leftOffset);
+
+    if ((leftPiece == null || currentPieceType != _getPieceType(leftPiece)) &&
+        !invalidSquares.contains(ArrayPosition.fromList(leftOffset))) {
+      validSquares.add(ArrayPosition.fromList(leftOffset));
+    }
+
+    //right side
+    final rightOffset = [currentPos.rank, currentPos.file + 1];
+    final rightPiece = _getPiece(rightOffset);
+
+    if ((rightPiece == null || currentPieceType != _getPieceType(rightPiece)) &&
+        !invalidSquares.contains(ArrayPosition.fromList(rightOffset))) {
+      validSquares.add(ArrayPosition.fromList(rightOffset));
+    }
+
+    //top side
+    final topOffset = [currentPos.rank + 1, currentPos.file];
+    final topPiece = _getPiece(topOffset);
+
+    if ((topPiece == null || currentPieceType != _getPieceType(topPiece)) &&
+        !invalidSquares.contains(ArrayPosition.fromList(topOffset))) {
+      validSquares.add(ArrayPosition.fromList(topOffset));
+    }
+
+    //top-right side
+    final topRightOffset = [currentPos.rank + 1, currentPos.file + 1];
+    final topRightPiece = _getPiece(topRightOffset);
+
+    if ((topRightPiece == null ||
+            currentPieceType != _getPieceType(topRightPiece)) &&
+        !invalidSquares.contains(ArrayPosition.fromList(topRightOffset))) {
+      validSquares.add(ArrayPosition.fromList(topRightOffset));
+    }
+
+    //top-left side
+    final topLeftOffset = [currentPos.rank + 1, currentPos.file - 1];
+    final topLeftPiece = _getPiece(topLeftOffset);
+
+    if ((topLeftPiece == null ||
+            currentPieceType != _getPieceType(topLeftPiece)) &&
+        !invalidSquares.contains(ArrayPosition.fromList(topLeftOffset))) {
+      validSquares.add(ArrayPosition.fromList(topLeftOffset));
+    }
+
+    //bottom side
+    final bottomOffset = [currentPos.rank - 1, currentPos.file];
+    final bottomPiece = _getPiece(bottomOffset);
+
+    if ((bottomPiece == null ||
+            currentPieceType != _getPieceType(bottomPiece)) &&
+        !invalidSquares.contains(ArrayPosition.fromList(bottomOffset))) {
+      validSquares.add(ArrayPosition.fromList(bottomOffset));
+    }
+
+    //bottom-right side
+    final bottomRightOffset = [currentPos.rank - 1, currentPos.file + 1];
+    final bottomRightPiece = _getPiece(bottomRightOffset);
+
+    if ((bottomRightPiece == null ||
+            currentPieceType != _getPieceType(bottomRightPiece)) &&
+        !invalidSquares.contains(ArrayPosition.fromList(bottomRightOffset))) {
+      validSquares.add(ArrayPosition.fromList(bottomRightOffset));
+    }
+
+    //bottom-left side
+    final bottomLeftOffset = [currentPos.rank - 1, currentPos.file - 1];
+    final bottomLeftPiece = _getPiece(bottomLeftOffset);
+
+    if ((bottomLeftPiece == null ||
+            currentPieceType != _getPieceType(bottomLeftPiece)) &&
+        !invalidSquares.contains(ArrayPosition.fromList(bottomLeftOffset))) {
+      validSquares.add(ArrayPosition.fromList(bottomLeftOffset));
+    }
+
+    if (currentPieceType == PieceType.black) {
+      validSquares.remove(_whiteKingPosition);
+    } else {
+      validSquares.remove(_blackKingPosition);
     }
 
     return validSquares;
+  }
+
+  ///Returns `true` if a king (black or white) is on [targetPosition].
+  ///Otherwise, returns `false`.
+  bool _isAttemptingToCaptureKing(ArrayPosition targetPosition) {
+    return targetPosition == _blackKingPosition ||
+        targetPosition == _whiteKingPosition;
   }
 
   @override
   void evaluateCheck(List<int> currentPosition, bool isWhite) {
     List<int> targetPosition;
 
+    //if current piece is a white piece, grab position of the black king
+    //otherwise, grab position of the white king and evaluate check
     if (isWhite) {
       targetPosition = [_blackKingPosition.rank, _blackKingPosition.file];
     } else {

@@ -4,7 +4,7 @@ import 'board_state.dart';
 
 class BoardCubit extends Cubit<BoardState> {
   final ChessBoardRepo repository;
-  BoardCubit(this.repository) : super(InitialBoardState()) {}
+  BoardCubit(this.repository) : super(InitialBoardState());
 
   void startEngine() {
     repository.startEngine();

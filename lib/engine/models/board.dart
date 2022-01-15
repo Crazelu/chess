@@ -46,7 +46,7 @@ class Board {
 
   ///Moves a piece from one square to another.
   ///
-  ///If `enPassantSquarePosition` is not null, it makes an en passant move.
+  ///If [enPassantSquarePosition] is not null, it makes an en passant move.
   bool movePiece(
     List<int> currentPosition,
     List<int> targetPosition, {
